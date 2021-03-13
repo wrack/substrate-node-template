@@ -34,6 +34,7 @@ pub fn create_full<C, P>(
 	C: Send + Sync + 'static,
 	C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
 	C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
+	C::Api: pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber>,
 	C::Api: BlockBuilder<Block>,
 	P: TransactionPool + 'static,
 {
