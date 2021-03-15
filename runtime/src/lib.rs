@@ -39,6 +39,9 @@ pub use frame_support::{
 };
 use pallet_transaction_payment::CurrencyAdapter;
 
+// Contract
+use pallet_contracts::weights::WeightInfo;
+
 /// Import the template pallet.
 pub use pallet_template;
 
@@ -450,6 +453,34 @@ impl_runtime_apis! {
 			TransactionPayment::query_fee_details(uxt, len)
 		}
 	}
+	// Contract
+    impl pallet_contracts_rpc_runtime_api::ContractsApi<Block, AccountId, Balance, BlockNumber>
+    for Runtime
+    {
+        fn call(
+            origin: AccountId,
+            dest: AccountId,
+            value: Balance,
+            gas_limit: u64,
+            input_data: Vec<u8>,
+        ) -> pallet_contracts_primitives::ContractExecResult {
+            Contracts::bare_call(origin, dest, value, gas_limit, input_data)
+        }
+
+        fn get_storage(
+            address: AccountId,
+            key: [u8; 32],
+        ) -> pallet_contracts_primitives::GetStorageResult {
+            Contracts::get_storage(address, key)
+        }
+
+        fn rent_projection(
+            address: AccountId,
+        ) -> pallet_contracts_primitives::RentProjectionResult<BlockNumber> {
+            Contracts::rent_projection(address)
+        }
+    }
+   	// Contract end
 
 	#[cfg(feature = "runtime-benchmarks")]
 	impl frame_benchmarking::Benchmark<Block> for Runtime {
@@ -492,9 +523,6 @@ impl_runtime_apis! {
 	}
 }
 
-
-// Contract
-use pallet_contracts::weights::WeightInfo;
 
 // Contracts price units.
 pub const MILLICENTS: Balance = 1_000_000_000;
